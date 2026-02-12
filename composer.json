@@ -1,0 +1,43 @@
+{
+  "name": "georgeff/bus",
+  "description": "A message bus library",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Mike Georgeff",
+      "email": "mike@georgeff.co",
+      "role": "Author"
+    }
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^8.2"
+  },
+  "suggest": {
+    "psr/container": "Required for PsrContainerResolver"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.0",
+    "phpunit/phpunit": "^11.0",
+    "psr/container": "^2.0",
+    "squizlabs/php_codesniffer": "^3.11"
+  },
+  "autoload": {
+    "psr-4": {
+      "Georgeff\\Bus\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Georgeff\\Bus\\Test\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": ["vendor/bin/phpunit"],
+    "analyze": ["vendor/bin/phpstan"],
+    "phpcs": ["vendor/bin/phpcs"]
+  }
+}
