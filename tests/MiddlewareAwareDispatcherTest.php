@@ -42,6 +42,45 @@ final class MiddlewareAwareDispatcherTest extends TestCase
         $this->assertSame($command, $receivedCommand);
     }
 
+    public function test_handler_receives_the_command_passed_to_next(): void
+    {
+        $original    = new \stdClass();
+        $replacement = new \stdClass();
+
+        $inner = $this->createMock(DispatcherInterface::class);
+        $inner->expects($this->once())->method('dispatch')->with($this->identicalTo($replacement));
+
+        $middleware = fn (object $command, callable $next): mixed => $next($replacement);
+
+        $dispatcher = new MiddlewareAwareDispatcher($inner, [$middleware]);
+        $dispatcher->dispatch($original);
+    }
+
+    public function test_each_middleware_and_the_handler_receive_the_command_passed_by_the_previous_stage(): void
+    {
+        $original = new \stdClass();
+        $first    = new \stdClass();
+        $second   = new \stdClass();
+
+        $inner = $this->createMock(DispatcherInterface::class);
+        $inner->expects($this->once())->method('dispatch')->with($this->identicalTo($second));
+
+        $received = null;
+
+        $outer = fn (object $command, callable $next): mixed => $next($first);
+
+        $innerMiddleware = function (object $command, callable $next) use (&$received, $second): mixed {
+            $received = $command;
+
+            return $next($second);
+        };
+
+        $dispatcher = new MiddlewareAwareDispatcher($inner, [$outer, $innerMiddleware]);
+        $dispatcher->dispatch($original);
+
+        $this->assertSame($first, $received);
+    }
+
     public function test_middleware_can_short_circuit_dispatch(): void
     {
         $inner = $this->createMock(DispatcherInterface::class);

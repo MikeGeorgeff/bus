@@ -22,7 +22,7 @@ final class MiddlewareAwareDispatcher implements DispatcherInterface
 
     public function dispatch(object $command): mixed
     {
-        $pipeline = fn(): mixed => $this->dispatcher->dispatch($command);
+        $pipeline = fn(object $command): mixed => $this->dispatcher->dispatch($command);
 
         foreach (array_reverse($this->middleware) as $middleware) {
             $pipeline = function (object $command) use ($pipeline, $middleware) {
